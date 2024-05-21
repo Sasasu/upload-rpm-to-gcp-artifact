@@ -4,7 +4,7 @@ if [ x$5 != 'x' ]; then
   gcloud auth activate-service-account --key-file "$5"
 fi
 
-gcloud config set core/project "$1"
+gcloud config set project "$1"
 gcloud config set artifacts/repository "$2"
 gcloud config set artifacts/location "$3"
 

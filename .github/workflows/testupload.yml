@@ -29,12 +29,10 @@ jobs:
       - name: upload
         uses: ./
         with:
-          project: data-pcf-db
-          repository: sa-yum-test-dev
+          project: data-gpdb-dev2
+          repository: pgrelease-ci-dev
           location: us
-          rpms: |
-            filesystem*
-            gcc-8.5.0-22.el8.x86_64.rpm
+          rpms: filesystem* gcc-8.5.0-22.el8.x86_64.rpm
           # https://docs.github.com/actions/security-guides/encrypted-secrets
           credentials_json: gcp.json
 
@@ -56,8 +54,8 @@ jobs:
       - name: upload
         uses: ./
         with:
-          project: data-pcf-db
-          repository: sa-yum-test-dev
+          project: data-gpdb-dev2
+          repository: pgrelease-ci-dev
           location: us
           rpms: |
             filesystem*
