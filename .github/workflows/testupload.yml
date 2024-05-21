@@ -1,0 +1,63 @@
+name: testupload
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  jsonfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: decode secret
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CREDENTIALS_FOR_GCP_BASE64 }}
+        run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > gcp.json
+
+      - name: download-1
+        run: wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/filesystem-3.8-6.el8.x86_64.rpm'
+
+      - name: download-2
+        run: wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/gcc-8.5.0-22.el8.x86_64.rpm'
+
+      - name: upload
+        uses: ./
+        with:
+          project: data-pcf-db
+          repository: sa-yum-test-dev
+          location: us
+          rpms: |
+            filesystem*
+            gcc-8.5.0-22.el8.x86_64.rpm
+          # https://docs.github.com/actions/security-guides/encrypted-secrets
+          credentials_json: gcp.json
+
+  workload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: 'data-pcf-db'
+          # https://cloud.google.com/blog/products/identity-security/enabling-keyless-authentication-from-github-actions
+          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+
+      - name: download
+        run: wget 'http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages/filesystem-3.8-6.el8.x86_64.rpm'
+
+      - name: upload
+        uses: ./
+        with:
+          project: data-pcf-db
+          repository: sa-yum-test-dev
+          location: us
+          rpms: |
+            filesystem*

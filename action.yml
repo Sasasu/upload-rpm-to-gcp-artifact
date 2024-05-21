@@ -1,0 +1,28 @@
+name: 'upload-rpm-to-gcp-artifact'
+description: 'Upload rpm files to gcp artifact'
+inputs:
+  project:
+    description: 'The project name in Google Cloud'
+    required: true
+  repository:
+    description: 'The repository name'
+    required: true
+  location:
+    description: 'The location of the repository'
+    required: true
+  rpms:
+    description: 'A file or wildcard pattern that describes what to upload'
+    required: true
+  credentials_json:
+    description: 'The credentials json file path'
+    required: false
+    default: ''
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.project }}
+    - ${{ inputs.repository }}
+    - ${{ inputs.location }}
+    - ${{ inputs.rpms }}
+    - ${{ inputs.credentials_json }}
